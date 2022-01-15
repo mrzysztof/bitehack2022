@@ -28,5 +28,6 @@ class MessageOffensivityResponse(BaseModel):
 
 class MessagesOffensivityResponse(BaseModel):
     messages: List[MessageOffensivityResponse]
+    model: Optional[str]
     errors: Optional[List[APIMessage]]
     warnings: Optional[List[APIMessage]]

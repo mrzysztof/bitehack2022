@@ -9,11 +9,10 @@ import uvicorn
 
 from models import (
     MessagesOffensivityRequest,
-    MessagesOffensivityResponse,
-    TableRecognitionRequest,
-    TablesContentAndPositionResponse
+    MessagesOffensivityResponse
 )
 from model import FlairInferenceModel, TransformersInferenceModel
+from config import Config
 
 
 app = FastAPI(
@@ -25,8 +24,9 @@ app = FastAPI(
 api_directory = Path(__file__).parent
 example_request = srsly.read_json(api_directory / 'data' / 'example_request.json')
 
-flair_model = FlairInferenceModel()
-transformers_model = TransformersInferenceModel()
+config = Config()
+# flair_model = FlairInferenceModel(config['flair_path'])
+transformers_model = TransformersInferenceModel(config['transformers_path'])
 
 
 @app.get('/', include_in_schema=False)
@@ -36,9 +36,21 @@ def docs_redirect():
 
 # TODO change name of the endpoint
 @app.post('/predict', response_model=MessagesOffensivityResponse, tags=['offensivity prediction'])
-async def offensive_predict(body: MessagesOffensivityRequest = Body(..., example=example_request)):
+async def predict(body: MessagesOffensivityRequest = Body(..., example=example_request)):
     """Detect offensive messages"""
 
-    
+    if hasattr(body, 'model') and body.model == 'flair':
+        model = flair_model
+    else:
+        model = transformers_model
 
-    return {"tables": tables}
+    results = []
+    for message in body.messages:
+        results.append({
+            'message_id': message.message_id,
+            'offensivity': model.predict(message.content)
+        })
+
+    return {
+        "messages": results
+    }

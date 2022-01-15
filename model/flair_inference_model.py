@@ -13,10 +13,4 @@ class FlairInferenceModel:
 
         label = sentence.get_label_names()[0]
 
-        # FIXME
-        mapping = {
-            '0': 'not disaster',
-            '1': 'disaster'
-        }
-
-        return mapping[label]
+        return label
