@@ -17,7 +17,7 @@ from config import Config
 
 app = FastAPI(
     title='ArtificialStupidityModel',
-    version='1.0',
+    version='1.1',
     description='Model to detect offensive text'
 )
 
@@ -25,7 +25,7 @@ api_directory = Path(__file__).parent
 example_request = srsly.read_json(api_directory / 'data' / 'example_request.json')
 
 config = Config()
-# flair_model = FlairInferenceModel(config['flair_path'])
+flair_model = FlairInferenceModel(config['flair_path'])
 transformers_model = TransformersInferenceModel(config['transformers_path'])
 
 
