@@ -2,7 +2,7 @@ from flair.data import Sentence
 from flair.models import TextClassifier
 
 
-class InferenceModel:
+class FlairInferenceModel:
     def __init__(self, path: str) -> None:
         self._model = TextClassifier.load(path)
 
