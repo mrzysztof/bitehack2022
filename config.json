@@ -1,4 +1,0 @@
-{
-    "flair_path": "models/flair-text-classifier.pt",
-    "transformers_path": "models/roberta-text-classifier"
-}
