@@ -1,0 +1,5 @@
+from .flair_inference_model import FlairInferenceModel
+from .transformers_inference_model import TransformersInferenceModel
+from .language_model import LanguageModel
+from .image_model import ImageModel
+from .multi_label_model import MultiLabelModel

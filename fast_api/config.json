@@ -1,0 +1,7 @@
+{
+    "flair_path": "models/flair-text-classifier.pt",
+    "transformers_path": "models/roberta-text-classifier",
+    "language_model_path": "roberta-base",
+    "image_model_path": "models/model.h5",
+    "multi_label_path": "models/roberta-multi-label"
+}
