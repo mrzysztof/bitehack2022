@@ -84,5 +84,5 @@ class SwearsDetector:
 
 
 if __name__ == '__main__':
-    detector = SwearsDetector("C:\\Materiały\\bitehack\\src\\data\\excluded_words.json")
+    detector = SwearsDetector("/medium_server\\data\\excluded_words.json")
     print(detector.detect("u fucking idiot as bitch and dumbass dumbass what u have done", action=ActionList.Mask))
