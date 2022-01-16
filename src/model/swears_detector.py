@@ -2,20 +2,13 @@ import json
 from fuzzywuzzy.StringMatcher import StringMatcher
 from enum import Enum
 
-def delete_str(*args):
-    return ''
-
-def stars_str(*args):
-    return args[0][0] + '*' * (len(args[0])-1)
-
-def replace(*args):
-    return
 
 
 class ActionList(Enum):
     Delete = 0
     Stars = 1
     Replace = 2
+    Mask = 3
 
 
 class SwearsDetector:
@@ -63,12 +56,14 @@ class SwearsDetector:
                             break
                 if len(founded) > 0:
                     searched_string = searched_string[founded[-1][1]:]
-                    cut_from += founded[-1][1]
+                    cut_from += founded[-1][1]-1
 
         for to_change in excluded:
             replacement = ''
             if action == ActionList.Stars:
                 replacement = string[to_change[0]+1] + '*' * (to_change[1]-to_change[0]-2)
+            elif action == ActionList.Mask:
+                replacement = '<mask>'
             else:
                 replacement = to_change[2]
             string = string[:to_change[0]+1] + replacement + string[to_change[1]:]
@@ -87,5 +82,5 @@ class SwearsDetector:
 
 
 if __name__ == '__main__':
-    detector = SwearsDetector("C:\\Materiały\\integra\\bitehack2022\\src\\data\\excluded_words.json")
-    print(detector.detect("u fucking idiot as bitch and dumbass dumbass what u have done"))
+    detector = SwearsDetector("C:\\Materiały\\bitehack\\src\\data\\excluded_words.json")
+    print(detector.detect("u fucking idiot as bitch and dumbass dumbass what u have done", action=ActionList.Mask))
