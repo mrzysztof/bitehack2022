@@ -69,9 +69,10 @@ def detect_and_filter():
     except ValueError:
         return "incorrect max offensivity parameter", HTTPStatus.BAD_REQUEST
     messages2send = {"messages": [{"message_id": i, "content": mess} for i, mess in enumerate(filtred_comments)]}
-    detected_request = requests.post('http://127.0.0.1:8444/lm', params=jsonify(messages2send))
+    detected_request_filter = requests.post('http://127.0.0.1:8444/lm', params=jsonify(messages2send))
+    detected_request = requests.post('http://127.0.0.1:8444/predict', params=jsonify(messages2send))
     detected_data = detected_request.json()
     messages_detected = detected_data['messages']
+    messages_filtred = detected_request_filter.json()['messages']
     to_show = [offensivity_threshold2number(message['offensivity']) < max_offensivity for message in messages_detected]
-    messages2send = [message['content'] for message in messages_detected]
-    return jsonify({"to_show": to_show, "filteres_comments": messages2send})
+    return jsonify({"to_show": to_show, "filteres_comments": messages_filtred})
