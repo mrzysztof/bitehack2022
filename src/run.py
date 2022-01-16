@@ -1,4 +1,4 @@
-from src import create_app
+from src.flask_serwer.server import app
 
 if __name__ == '__main__':
-    create_app().run(debug=True, port=8800)
+    app.run(debug=True, port=8800)
