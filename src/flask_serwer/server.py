@@ -2,10 +2,11 @@ from flask import request, jsonify, Flask
 from http import HTTPStatus
 import requests
 from flask_cors import CORS
+from ..model.swears_detector import SwearsDetector, ActionList
+
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
-from ..model.swears_detector import SwearsDetector, ActionList
 
 
 def offensivity_threshold2number(offensivity_threshold):
@@ -22,13 +23,11 @@ def offensivity_threshold2number(offensivity_threshold):
     else:
         raise ValueError("incorrect offensivity threshold")
 
-@app.route('/foo', methods=['GET', 'POST'])
-def foo():
-    data = request.json
-    return jsonify(data)
-
 @app.route('/just_detect', methods=['GET', 'POST'])
 def just_detect():
+    """
+    endpoint used only for detect offensive comments
+    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
@@ -47,6 +46,9 @@ def just_detect():
 
 @app.route('/detect_and_filter', methods=['GET', 'POST'])
 def detect_and_filter():
+    """
+    endpoint used for detect offensive comments and filter swears (replacing with stars)
+    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
@@ -64,9 +66,11 @@ def detect_and_filter():
     to_show = [offensivity_threshold2number(message['offensivity']) < max_offensivity for message in messages_detected]
     return jsonify({"to_show": to_show, "filteres_comments": filtred_comments})
 
-# print('xxxxxx')
 @app.route('/detect_and_replace', methods=['GET', 'POST'])
 def detect_and_replace():
+    """
+    endpoint used for detect offensive comments and replacing swears on pleasant words
+    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
@@ -81,7 +85,6 @@ def detect_and_replace():
     detected_request = requests.post('http://127.0.0.1:8444/predict', params=jsonify(messages2send))
     if not detected_request.status_code == detected_request_filter.status_code == HTTPStatus.OK:
         return "communication error", HTTPStatus.INTERNAL_SERVER_ERROR
-
     detected_data = detected_request.json()
     messages_detected = detected_data['messages']
     messages_filtred = detected_request_filter.json()['messages']
