@@ -2,11 +2,10 @@ from flask import request, jsonify, Flask
 from http import HTTPStatus
 import requests
 from flask_cors import CORS
-from ..model.swears_detector import SwearsDetector, ActionList
-
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
+from ..model.swears_detector import SwearsDetector, ActionList
 
 
 def offensivity_threshold2number(offensivity_threshold):
@@ -23,11 +22,13 @@ def offensivity_threshold2number(offensivity_threshold):
     else:
         raise ValueError("incorrect offensivity threshold")
 
+@app.route('/foo', methods=['GET', 'POST'])
+def foo():
+    data = request.json
+    return jsonify(data)
+
 @app.route('/just_detect', methods=['GET', 'POST'])
 def just_detect():
-    """
-    endpoint used only for detect offensive comments
-    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
@@ -36,58 +37,86 @@ def just_detect():
     except ValueError:
         return "incorrect max offensivity parameter", HTTPStatus.BAD_REQUEST
     got_messages = data['comments']
-    messages2send = {"messages": [{"message_id": i, "content": mess} for i, mess in enumerate(got_messages)]}
-    detected_request = requests.post('http://127.0.0.1:8444/predict', params=jsonify(messages2send))
+    messages2send = {
+        "messages": [{"message_id": i, "content": mess} for i, mess in enumerate(got_messages)],
+        "model": "flair"
+    }
+    detected_request = requests.post('http://127.0.0.1:8444/predict', json=messages2send)
     detected_data = detected_request.json()
     messages_detected = detected_data['messages']
-    to_show = [offensivity_threshold2number(message['offensivity']) < max_offensivity for message in messages_detected]
+    to_show = [offensivity_threshold2number(message['offensivity']) >= max_offensivity for message in messages_detected]
     return jsonify({"to_show": to_show})
 
 
 @app.route('/detect_and_filter', methods=['GET', 'POST'])
 def detect_and_filter():
-    """
-    endpoint used for detect offensive comments and filter swears (replacing with stars)
-    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
-    swear_filter = SwearsDetector('data/excluded_words.json')
+    swear_filter = SwearsDetector('src/data/excluded_words.json')
     filtred_comments = [swear_filter.detect(comment) for comment in data['comments']]
     try:
         max_offensivity = offensivity_threshold2number(data['options']['max_offensivity'])
     except ValueError:
         return "incorrect max offensivity parameter", HTTPStatus.BAD_REQUEST
     got_messages = data['comments']
-    messages2send = {"messages": [{"message_id": i, "content": mess} for i, mess in enumerate(got_messages)]}
-    detected_request = requests.post('http://127.0.0.1:8444/predict', params=jsonify(messages2send))
+    messages2send = {
+        "messages": [{"message_id": i, "content": mess} for i, mess in enumerate(got_messages)],
+        "model": "flair"
+    }
+    detected_request = requests.post('http://127.0.0.1:8444/predict', json=messages2send)
     detected_data = detected_request.json()
     messages_detected = detected_data['messages']
-    to_show = [offensivity_threshold2number(message['offensivity']) < max_offensivity for message in messages_detected]
+    to_show = [offensivity_threshold2number(message['offensivity']) >= max_offensivity for message in messages_detected]
     return jsonify({"to_show": to_show, "filteres_comments": filtred_comments})
 
+# print('xxxxxx')
 @app.route('/detect_and_replace', methods=['GET', 'POST'])
 def detect_and_replace():
-    """
-    endpoint used for detect offensive comments and replacing swears on pleasant words
-    """
     if not request.is_json:
         return "json format is required", HTTPStatus.BAD_REQUEST
     data = request.json
-    swear_filter = SwearsDetector('data/excluded_words.json')
-    filtred_comments = [swear_filter.detect(comment, action=ActionList.Mask) for comment in data['comments']]
+    swear_filter = SwearsDetector('src/data/excluded_words.json')
+    filtered_comments = [list(swear_filter.detect(comment, action=ActionList.Mask)) for comment in data['comments']]
+    
     try:
        max_offensivity = offensivity_threshold2number(data['options']['max_offensivity'])
     except ValueError:
        return "incorrect max offensivity parameter", HTTPStatus.BAD_REQUEST
-    messages2send = {"messages": [{"message_id": i, "content": mess} for i, mess in enumerate(filtred_comments)]}
-    detected_request_filter = requests.post('http://127.0.0.1:8444/lm', params=jsonify(messages2send))
-    detected_request = requests.post('http://127.0.0.1:8444/predict', params=jsonify(messages2send))
-    if not detected_request.status_code == detected_request_filter.status_code == HTTPStatus.OK:
+    
+    # text classification
+    messages2send = {"messages": [{"message_id": i, "content": mess} for i, mess in enumerate(data['comments'])], "model": "flair"}
+    detected_request = requests.post('http://127.0.0.1:8444/predict', json=messages2send)
+
+    print('here1')
+    if not detected_request.status_code == HTTPStatus.OK:
         return "communication error", HTTPStatus.INTERNAL_SERVER_ERROR
+
+    print('here2')
     detected_data = detected_request.json()
     messages_detected = detected_data['messages']
-    messages_filtred = detected_request_filter.json()['messages']
-    to_show = [offensivity_threshold2number(message['offensivity']) < max_offensivity for message in messages_detected]
-    return jsonify({"to_show": to_show, "filteres_comments": filtred_comments})
+
+
+    # language model
+    messages_filtered = []
+
+    for i, (filtered_comment_parts, comment) in enumerate(zip(filtered_comments, data['comments'])):
+        print('here')
+        messages2send_lm = {
+            "messages": [{
+                "message_id": i, "content": comment, 'spans': [
+                    {'start': start, 'end': end} for start, end in filtered_comment_parts
+                ]
+            }]
+        }
+        print(messages2send_lm)
+        detected_request_filter = requests.post('http://127.0.0.1:8444/lm', json=messages2send_lm)
+
+        if not detected_request_filter.status_code == HTTPStatus.OK:
+            return "communication error", HTTPStatus.INTERNAL_SERVER_ERROR
+    
+        messages_filtered.append(detected_request_filter.json()['messages'][0]['content'])
+
+    to_show = [offensivity_threshold2number(message['offensivity']) >= max_offensivity for message in messages_detected]
+    return jsonify({"to_show": to_show, "filteres_comments": messages_filtered})
 

@@ -63,7 +63,8 @@ class SwearsDetector:
             if action == ActionList.Stars:
                 replacement = string[to_change[0]+1] + '*' * (to_change[1]-to_change[0]-2)
             elif action == ActionList.Mask:
-                replacement = '<mask>'
+                yield (to_change[0]+1, to_change[1])
+                continue
             else:
                 replacement = to_change[2]
             string = string[:to_change[0]+1] + replacement + string[to_change[1]:]
@@ -84,5 +85,5 @@ class SwearsDetector:
 
 
 if __name__ == '__main__':
-    detector = SwearsDetector("/medium_server\\data\\excluded_words.json")
+    detector = SwearsDetector("C:\\Materiały\\bitehack\\src\\data\\excluded_words.json")
     print(detector.detect("u fucking idiot as bitch and dumbass dumbass what u have done", action=ActionList.Mask))
