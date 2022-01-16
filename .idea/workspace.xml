@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9505c3c2-dc02-4fd7-b33a-b7233f94cefb" name="Changes" comment="corrections2">
-      <change afterPath="$PROJECT_DIR$/chrome_extension/manifest.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chrome_extension/substitute.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/example_json.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fixing_process.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/flask_serwer/Serwer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/flask_serwer/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/flask_serwer/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/flask_serwer/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/inference_model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/swears_detector.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/swears_detector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/substitute.js" beforeDir="false" afterPath="$PROJECT_DIR$/substitute.js" afterDir="false" />
-    </list>
+    <list default="true" id="9505c3c2-dc02-4fd7-b33a-b7233f94cefb" name="Changes" comment="cleanup v2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,7 +44,7 @@
     </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="merge_branch" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -229,6 +214,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/bitehack$swears_detector.coverage" NAME="swears_detector Coverage Results" MODIFIED="1642295223696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/model" />
     <SUITE FILE_PATH="coverage/bitehack$wsgiapp.coverage" NAME="wsgiapp Coverage Results" MODIFIED="1642316506299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv/Lib/site-packages/gunicorn/app" />
-    <SUITE FILE_PATH="coverage/bitehack$run.coverage" NAME="run Coverage Results" MODIFIED="1642317764626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/bitehack$run.coverage" NAME="run Coverage Results" MODIFIED="1642319035236" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>
