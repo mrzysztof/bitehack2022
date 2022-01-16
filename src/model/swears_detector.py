@@ -28,7 +28,7 @@ class SwearsDetector:
             while len(founded) > 0:
                 n = len(excluded_key)
                 matcher = StringMatcher(None, excluded_key, searched_string)
-                matched = matcher.get_matching_blocks()
+                matched = matcher.get_matching_blocks()[:-1]
                 # print(matched, excluded_key)
                 founded = []
                 N = len(searched_string)
@@ -75,6 +75,8 @@ class SwearsDetector:
         n = len(str1)
         while str1[pos1].isalpha() and pos1 > 0:
             pos1 -= 1
+        if pos2 >= n-1:
+            return pos1, pos2
         while str1[pos2].isalpha() and pos2 < n - 1:
             pos2 += 1
         return pos1, pos2
